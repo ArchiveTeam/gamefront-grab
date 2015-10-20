@@ -103,12 +103,14 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   if string.match(url["url"], "^https?://[^/]*gamefront%.com/files/service/thankyou%?id=[0-9]+") then
-    io.stdout:write("Sleeping 15 seconds to make sure the link to download the file works.\n")
+    io.stdout:write("Waiting 15 seconds to make sure the link to download the file works.\n")
     io.stdout:flush()
     os.execute("sleep 15")
   end
 
-  if status_code == 404 and string.match(url["url"], "media[0-9]+%.gamefront%.com") then
+  if string.match(url["url"], "media[0-9]+%.gamefront%.com") and status_code ~= 200 then
+    io.stdout:write("The link to the download did not return status code 200. Are you banned? (This error might also be due to a problem on GameFront's side.)\n")
+    io.stdout:flush()
     return wget.actions.ABORT
   end
   
