@@ -101,6 +101,16 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       downloaded[url.url] = true
     end
   end
+
+  if string.match(url["url"], "^https?://[^/]*gamefront%.com/files/service/thankyou%?id=[0-9]+") then
+    io.stdout:write("Sleeping 15 seconds to make sure the link to download the file works.\n")
+    io.stdout:flush()
+    os.execute("sleep 15")
+  end
+
+  if status_code == 404 and string.match(url["url"], "media[0-9]+%.gamefront%.com") then
+    return wget.actions.ABORT
+  end
   
   if status_code >= 500 or
     (status_code >= 400 and status_code ~= 404 and status_code ~= 403) then
