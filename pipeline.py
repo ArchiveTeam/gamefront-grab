@@ -59,7 +59,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20151020.02"
+VERSION = "20151020.03"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'gamefront'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -101,6 +101,7 @@ class CheckIP(SimpleTask):
             session1.get('http://www.gamefront.com/files/8729/cc.zip')
             html = session1.get('http://www.gamefront.com/files/service/thankyou?id=8729', headers={'referer': 'http://www.gamefront.com/files/8729/cc.zip'})
             downloadurl = re.search(r"var downloadUrl = '([^']+)'", html.text).group(1)
+            time.sleep(15)
             dfile = session1.get(downloadurl)
             if (not re.match(r'https?://media[0-9]\.gamefront\.com/guploads/200101/13/04/cc\.zip\?', dfile.url)) or dfile.status_code != 200 or len(dfile.text) != 102242:
                 item.log_output('Got IP addresses: {0}'.format(ip_set))

@@ -103,6 +103,9 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   if string.match(url["url"], "^https?://[^/]*gamefront%.com/files/service/thankyou%?id=[0-9]+") then
+    if status_code ~= 200 then
+      return wget.actions.ABORT
+    end
     io.stdout:write("Waiting 15 seconds to make sure the link to download the file works.\n")
     io.stdout:flush()
     os.execute("sleep 15")
