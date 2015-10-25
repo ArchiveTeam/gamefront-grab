@@ -72,10 +72,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   
   if string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]") then
     html = read_file(file)
-    for newurl in string.gmatch(html, '"([^"]+)"') do
+    for newurl in string.gmatch(html, '([^"]+)') do
       checknewurl(newurl)
     end
-    for newurl in string.gmatch(html, "'([^']+)'") do
+    for newurl in string.gmatch(html, "([^']+)") do
       checknewurl(newurl)
     end
   end
