@@ -33,7 +33,7 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
   end
   
   if (downloaded[url] ~= true or addedtolist[url] ~= true) then
-    if (downloaded[url] ~= true and addedtolist[url] ~= true) and ((string.match(url, "[^0-9]"..item_value.."[0-9]") and not (string.match(url, "[^0-9]"..item_value.."[0-9][0-9]") or string.match(url, "/window%.open%('https?://"))) or html == 0) then
+    if (downloaded[url] ~= true and addedtolist[url] ~= true) and ((((item_type == "file" and string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]")) or (item_type == "singlefile" and string.match(url, "[^0-9]"..item_value) and not string.match(url, "[^0-9]"..item_value.."[0-9]"))) and not string.match(url, "/window%.open%('https?://")) or html == 0) then
       addedtolist[url] = true
       return true
     else
@@ -48,7 +48,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   local html = nil
   
   local function check(url)
-    if (downloaded[url] ~= true and addedtolist[url] ~= true) and ((string.match(url, "[^0-9]"..item_value.."[0-9]") and not (string.match(url, "[^0-9]"..item_value.."[0-9][0-9]") or string.match(url, "/window%.open%('https?://"))) or string.match(url, "media[0-9]+%.gamefront%.com") or string.match(url, "uploads%.gamefront%.com")) then
+    if (downloaded[url] ~= true and addedtolist[url] ~= true) and ((((item_type == "file" and string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]")) or (item_type == "singlefile" and string.match(url, "[^0-9]"..item_value) and not string.match(url, "[^0-9]"..item_value.."[0-9]"))) and not (string.match(url, "[^0-9]"..item_value.."[0-9][0-9]") or string.match(url, "/window%.open%('https?://"))) or string.match(url, "media[0-9]+%.gamefront%.com") or string.match(url, "uploads%.gamefront%.com")) then
       if string.match(url, "&amp;") then
         table.insert(urls, { url=string.gsub(url, "&amp;", "&") })
         addedtolist[url] = true
@@ -70,7 +70,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
   end
   
-  if string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]") then
+  if (item_type == "file" and string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]")) or
+    (item_type == "singlefile" and string.match(url, "[^0-9]"..item_value) and not string.match(url, "[^0-9]"..item_value.."[0-9]")) then
     html = read_file(file)
     for newurl in string.gmatch(html, '([^"]+)') do
       checknewurl(newurl)
@@ -106,9 +107,9 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     if status_code ~= 200 then
       return wget.actions.ABORT
     end
-    io.stdout:write("Waiting 15 seconds to make sure the link to download the file works.\n")
+    io.stdout:write("Waiting 30 seconds to make sure the link to download the file works.\n")
     io.stdout:flush()
-    os.execute("sleep 15")
+    os.execute("sleep 30")
   end
 
   if string.match(url["url"], "media[0-9]+%.gamefront%.com") and status_code ~= 200 then

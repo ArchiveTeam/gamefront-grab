@@ -59,7 +59,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20151025.02"
+VERSION = "20160428.01"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'gamefront'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -207,12 +207,14 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
         
-        assert item_type in ('file')
+        assert item_type in ('file', 'singlefile')
         
         if item_type == 'file':
             suffixes = string.digits
             for suffix in suffixes:
                 wget_args.append('http://www.gamefront.com/files/{0}{1}'.format(item_value, suffix))
+        elif item_type == 'singlefile':
+                wget_args.append('http://www.gamefront.com/files/{0}'.format(item_value))
         else:
             raise Exception('Unknown item')
         
