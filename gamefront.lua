@@ -171,8 +171,6 @@ end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)
   if abortgrab == true then
-    io.stdout:write("Fotolog is overloaded! ABORTING.\n")
-    io.stdout:flush()
     return wget.exits.IO_FAIL
   end
   return exit_status
