@@ -59,7 +59,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20160429.02"
+VERSION = "20160429.04"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'gamefront'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -214,7 +214,14 @@ class WgetArgs(object):
             for suffix in suffixes:
                 wget_args.append('http://www.gamefront.com/files/{0}{1}'.format(item_value, suffix))
         elif item_type == 'singlefile':
-                wget_args.append('http://www.gamefront.com/files/{0}'.format(item_value))
+            wget_args.append('http://www.gamefront.com/files/{0}'.format(item_value))
+            session1 = requests.Session()
+            mainpage = session1.get('http://www.gamefront.com/files/' + item_value).text
+            if re.search(r"plopMe\('[0-9]+',\s+'[^']+'\)", mainpage):
+                plopme = re.search(r"plopMe\('[0-9]+',\s+'([^']+)'\)", mainpage).group(1)
+                print('Received token ' + plopme + '.')
+                print('Received ' + session1.post('http://www.gamefront.com/files/service/request', data = {'token':plopme}, headers={'referer': 'http://www.gamefront.com/files/' + item_value}).text + '.')
+            session1.get('http://www.gamefront.com/files/service/thankyou?id=' + item_value, headers={'referer': 'http://www.gamefront.com/files/' + item_value})
         else:
             raise Exception('Unknown item')
         
