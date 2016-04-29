@@ -59,7 +59,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20160429.04"
+VERSION = "20160429.05"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'gamefront'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -255,7 +255,7 @@ pipeline = Pipeline(
     PrepareDirectories(warc_prefix="gamefront"),
     WgetDownload(
         WgetArgs(),
-        max_tries=2,
+        max_tries=1,
         accept_on_exit_code=[0, 8],
         env={
             "item_dir": ItemValue("item_dir"),
