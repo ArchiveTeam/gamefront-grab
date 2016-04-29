@@ -9,6 +9,8 @@ local item_value = os.getenv('item_value')
 local downloaded = {}
 local addedtolist = {}
 
+local abortgrab = false
+
 for ignore in io.open("ignore-list", "r"):lines() do
   downloaded[ignore] = true
 end
@@ -73,6 +75,11 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   if (item_type == "file" and string.match(url, "[^0-9]"..item_value.."[0-9]") and not string.match(url, "[^0-9]"..item_value.."[0-9][0-9]")) or
     (item_type == "singlefile" and string.match(url, "[^0-9]"..item_value) and not string.match(url, "[^0-9]"..item_value.."[0-9]")) then
     html = read_file(file)
+    if string.match(url, "https?://[^/]*gamefront%.com/files/service/thankyou%?id=") and not string.match(html, "var%s+downloadUrl%s*=%s*'[^']+'") then
+      io.stdout:write("GameFront returned bad data! ABORTING.\n")
+      io.stdout:flush()
+      abortgrab = true
+    end
     for newurl in string.gmatch(html, '([^"]+)') do
       checknewurl(newurl)
     end
@@ -93,6 +100,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   url_count = url_count + 1
   io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
+
+  if abortgrab == true then
+    return wget.actions.ABORT
+  end
 
   if (status_code >= 200 and status_code <= 399) then
     if string.match(url.url, "https://") then
@@ -156,4 +167,13 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   return wget.actions.NOTHING
+end
+
+wget.callbacks.before_exit = function(exit_status, exit_status_string)
+  if abortgrab == true then
+    io.stdout:write("Fotolog is overloaded! ABORTING.\n")
+    io.stdout:flush()
+    return wget.exits.IO_FAIL
+  end
+  return exit_status
 end
