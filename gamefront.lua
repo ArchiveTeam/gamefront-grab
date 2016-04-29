@@ -107,9 +107,9 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     if status_code ~= 200 then
       return wget.actions.ABORT
     end
-    io.stdout:write("Waiting 30 seconds to make sure the link to download the file works.\n")
+    io.stdout:write("Waiting 120 seconds to make sure the link to download the file works.\n")
     io.stdout:flush()
-    os.execute("sleep 30")
+    os.execute("sleep 120")
   end
 
   if string.match(url["url"], "media[0-9]+%.gamefront%.com") and status_code ~= 200 then
